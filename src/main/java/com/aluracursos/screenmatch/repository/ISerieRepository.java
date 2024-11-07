@@ -14,11 +14,21 @@ public interface ISerieRepository extends JpaRepository<Serie, Long> {
     List<Serie> findTop5ByOrderByEvaluacionDesc();
 
     List<Serie> findByGenero(Categoria categoria);
+
     List<Serie> findByTotalTemporadasLessThanEqualAndEvaluacionGreaterThanEqual(Integer totalTemporadas, Double evaluacion);
+
     @Query("SELECT s FROM Serie s WHERE s.totalTemporadas <= :totalTemporadas AND s.evaluacion >= :evaluacion")
     List<Serie> buscarSeriesPorTemporadaYEvaluacion(Integer totalTemporadas, Double evaluacion);
+
     @Query("SELECT e FROM Serie s JOIN s.episodios e WHERE e.titulo ILIKE %:episodio%")
     List<Episodio> buscarEpisodiosPorNombre(String episodio);
+
     @Query("SELECT e FROM Serie s JOIN s.episodios e WHERE s = :serie ORDER BY e.evaluacion DESC LIMIT 5")
     List<Episodio> top5Episodios(Serie serie);
+
+    @Query("SELECT s FROM Serie s JOIN s.episodios e GROUP BY s ORDER BY MAX(e.fechaDeLanzamiento) DESC LIMIT 5")
+    List<Serie> lanzamientosMasRecientes();
+
+    @Query("SELECT e FROM Serie s JOIN s.episodios e WHERE s.id = :id AND e.temporada = :numberTemporada")
+    List<Episodio> getTemporadaByNumber(Long id, Long numberTemporada);
 }
